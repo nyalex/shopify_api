@@ -40,7 +40,8 @@
 	}
 
 
-	function client($shop, $shops_token, $api_key, $shared_secret, $private_app=false, $striplashes = TRUE)
+	function client($shop, $shops_token, $api_key, $shared_secret, $private_app=false)
+	public function call($method, $path, $params=array(), $striplashes = TRUE)
 	{
 		$password = $shops_token;
 		$baseurl = "https://$shop/";
@@ -49,14 +50,15 @@
 		{
 			$url = $baseurl.ltrim($path, '/');
 			$query = in_array($method, array('GET','DELETE')) ? $params : array();
-
-			if ($striplashes) {
-				$payload_data = stripslashes(json_encode($params));
-			} else {
-				$payload_data = json_encode($params);
-			}
-			
-			$payload = in_array($method, array('POST','PUT')) ? $payload_data : array();
+			$payload = in_array($method, array('POST','PUT')) ? stripslashes(json_encode($params)) : array();
+		if ($striplashes) {
+			$payload_data = stripslashes(json_encode($params));
+		} else {
+			$payload_data = json_encode($params);
+		}
+		
+		$payload = in_array($method, array('POST','PUT')) ? $payload_data : array();
+		
 
 			$request_headers = array();
 			array_push($request_headers, "X-Shopify-Access-Token: $shops_token");
